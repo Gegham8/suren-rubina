@@ -24,10 +24,12 @@ export default function VideoIntro({ isOpen, skipAnimation, onEnded }: VideoIntr
   const [isPlaying, setIsPlaying] = useState(false);
 
   // Kick off buffering immediately — `preload="auto"` alone is a hint browsers
-  // may ignore, so call load() explicitly for the large clip.
+  // may ignore, so call load() explicitly for the large clip. Skip it entirely
+  // when the intro is already open (the #showmore skip-refresh path).
   useEffect(() => {
+    if (isOpen) return;
     videoRef.current?.load();
-  }, []);
+  }, [isOpen]);
 
   const play = (): void => {
     const video = videoRef.current;
@@ -36,7 +38,6 @@ export default function VideoIntro({ isOpen, skipAnimation, onEnded }: VideoIntr
     void video.play();
   };
 
-  const prompt = isReady ? "Tap to play" : "Loading…";
 
   return (
     <motion.div
@@ -64,16 +65,6 @@ export default function VideoIntro({ isOpen, skipAnimation, onEnded }: VideoIntr
           onEnded={onEnded}
           className="h-full w-full select-none object-cover"
         />
-        {!isPlaying && (
-          <motion.span
-            className="absolute inset-x-0 bottom-16 text-center italic"
-            style={{ color: "#C47A5A", fontSize: "1.5rem" }}
-            animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          >
-            {prompt}
-          </motion.span>
-        )}
       </button>
     </motion.div>
   );
