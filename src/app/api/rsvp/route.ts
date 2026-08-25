@@ -41,7 +41,12 @@ function parseRsvp(body: unknown): ParseResult {
   return { ok: true, data: { name, attending, count, guests } };
 }
 
-/** POST to the Apps Script once, aborting if it stalls. */
+/**
+ * POST to the Apps Script once, aborting if it stalls. A 2xx status is not
+ * enough: Apps Script returns 200 both for `{ok:true}` and for its own error
+ * page (e.g. an unauthorized secret, or a script exception). We only count the
+ * submission saved when the JSON body confirms `ok: true`.
+ */
 async function postOnce(url: string, payload: Record<string, unknown>): Promise<boolean> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FORWARD_TIMEOUT_MS);
@@ -53,7 +58,15 @@ async function postOnce(url: string, payload: Record<string, unknown>): Promise<
       signal: controller.signal,
       redirect: "follow",
     });
-    return res.ok;
+    if (!res.ok) return false;
+    const text = await res.text();
+    try {
+      const body: unknown = JSON.parse(text);
+      return typeof body === "object" && body !== null && (body as { ok?: unknown }).ok === true;
+    } catch {
+      // A non-JSON body is the Apps Script HTML error page — treat as a failure.
+      return false;
+    }
   } catch {
     return false;
   } finally {

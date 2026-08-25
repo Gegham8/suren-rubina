@@ -26,7 +26,7 @@ export default function Hero({ isOpen, skipAnimation }: HeroProps) {
       className="relative z-10 flex items-start justify-center"
     >
       <motion.div
-        className="relative w-full overflow-hidden"
+        className="relative w-full overflow-hidden md:max-w-[35rem]"
         style={{ aspectRatio: PHOTO_ASPECT_RATIO }}
         initial={{ opacity: 0, scale: 1.03 }}
         animate={{ opacity: isOpen ? 1 : 0, scale: isOpen ? 1 : 1.03 }}
@@ -38,7 +38,7 @@ export default function Hero({ isOpen, skipAnimation }: HeroProps) {
           fill
           priority
           placeholder="blur"
-          sizes="100vw"
+          sizes="(min-width: 48rem) 35rem, 100vw"
           className="select-none object-cover"
           draggable={false}
         />

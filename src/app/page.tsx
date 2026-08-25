@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import Gallery from "@/components/Gallery";
 import Hero from "@/components/Hero";
 import Invitation from "@/components/Invitation";
+import { Reveal } from "@/components/Reveal";
 import Rsvp from "@/components/Rsvp";
 import Schedule from "@/components/Schedule";
 import VideoIntro from "@/components/VideoIntro";
@@ -86,10 +87,18 @@ export default function Home() {
       </section>
       <Invitation />
       <Gallery />
-      <Schedule />
-      <Rsvp />
-      <Countdown />
-      <Footer />
+      <Reveal>
+        <Schedule />
+      </Reveal>
+      <Reveal>
+        <Rsvp />
+      </Reveal>
+      <Reveal>
+        <Countdown />
+      </Reveal>
+      <Reveal>
+        <Footer />
+      </Reveal>
       <BackgroundMusic ref={musicRef} />
     </main>
   );

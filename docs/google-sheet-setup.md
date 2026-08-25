@@ -46,16 +46,28 @@ function doPost(e) {
     data.guests || '',
   ];
 
-  // Upsert: find an existing row by normalized name (column C).
-  const names = sheet.getRange(2, 3, Math.max(0, sheet.getLastRow() - 1), 1).getValues();
+  // Read the Name column (C) as the source of truth for data rows. Guard the
+  // empty-sheet case: getRange needs at least 1 row, and getLastRow() can be
+  // inflated by the H-column summary formula, so we place rows by the last
+  // *named* row rather than appendRow to avoid a crash or a blank gap.
+  const lastRow = sheet.getLastRow();
+  const names = lastRow >= 2
+    ? sheet.getRange(2, 3, lastRow - 1, 1).getValues().map(function (r) {
+        return String(r[0]).trim().toLowerCase();
+      })
+    : [];
+
   let target = -1;
+  let lastNamedRow = 1;                      // header row; first data row is 2
   for (let i = 0; i < names.length; i++) {
-    if (String(names[i][0]).trim().toLowerCase() === key) { target = i + 2; break; }
+    if (names[i]) lastNamedRow = i + 2;
+    if (names[i] === key) { target = i + 2; break; }
   }
 
   if (target === -1) {
-    row[0] = sheet.getLastRow();            // next sequential # (header is row 1)
-    sheet.appendRow(row);
+    const nextRow = lastNamedRow + 1;
+    row[0] = nextRow - 1;                    // sequential #: row 2 -> #1, row 3 -> #2, …
+    sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
   } else {
     row[0] = sheet.getRange(target, 1).getValue(); // keep existing #
     sheet.getRange(target, 1, 1, row.length).setValues([row]);

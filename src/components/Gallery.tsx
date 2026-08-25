@@ -1,10 +1,15 @@
+"use client";
+
 /**
  * Staggered photo collage — photos at the reference's exact cell size
  * (283 × 346 px) with its pixel offsets (−77 / 72 / −55), alternating
- * left/right with vertical overlap.
+ * left/right with vertical overlap. Photos also stagger in on scroll.
  */
 
 import Image from "next/image";
+import { motion, useReducedMotion } from "framer-motion";
+
+import { itemFade, itemRise, staggerContainer } from "./Reveal";
 
 import gallery1 from "../../public/images/gallery-1.webp";
 import gallery2 from "../../public/images/gallery-2.webp";
@@ -25,15 +30,22 @@ const PHOTO_H = 415;
 const FRAME_H = 1020 + PHOTO_H; // last photo's top + its height
 
 export default function Gallery() {
+  const reduce = useReducedMotion();
+  const item = reduce ? itemFade : itemRise;
   return (
     <section className="mx-auto w-full" style={{ maxWidth: "28rem" }}>
-      <div
+      <motion.div
         className="relative mx-4 overflow-hidden sm:mx-0"
         style={{ height: FRAME_H }}
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.15 }}
       >
         {PHOTOS.map((p, i) => (
-          <div
+          <motion.div
             key={i}
+            variants={item}
             className="absolute overflow-hidden shadow-[0_18px_45px_-18px_rgba(60,58,50,0.45)]"
             style={{ left: p.left, top: p.top, width: PHOTO_W, height: PHOTO_H, zIndex: p.z }}
           >
@@ -47,9 +59,9 @@ export default function Gallery() {
               style={{ objectPosition: p.pos }}
               draggable={false}
             />
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 }
