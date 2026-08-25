@@ -11,14 +11,19 @@ import { motion, type Transition } from "framer-motion";
  * ends, `onEnded` opens the page and the overlay fades away to reveal it.
  */
 
-const VIDEO_SRC = "/images/light-transition-end-seedance-2-0-video-extend-ai-playground-812041.mp4";
+const VIDEO_SRC = "/images/light-transition.MOV";
 
 const FADE_OUT: Transition = { duration: 0.8, ease: "easeInOut" };
 const INSTANT: Transition = { duration: 0 };
 
-type VideoIntroProps = { isOpen: boolean; skipAnimation: boolean; onEnded: () => void };
+type VideoIntroProps = {
+  isOpen: boolean;
+  skipAnimation: boolean;
+  onStart: () => void;
+  onEnded: () => void;
+};
 
-export default function VideoIntro({ isOpen, skipAnimation, onEnded }: VideoIntroProps) {
+export default function VideoIntro({ isOpen, skipAnimation, onStart, onEnded }: VideoIntroProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isReady, setIsReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -34,6 +39,9 @@ export default function VideoIntro({ isOpen, skipAnimation, onEnded }: VideoIntr
   const play = (): void => {
     const video = videoRef.current;
     if (!video || !isReady) return;
+    // Start the ambient track inside this same tap gesture — required by the
+    // browser autoplay policy — so music begins as the intro opens.
+    onStart();
     setIsPlaying(true);
     void video.play();
   };

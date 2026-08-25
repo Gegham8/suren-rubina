@@ -1,8 +1,8 @@
 "use client";
 
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
-import BackgroundMusic from "@/components/BackgroundMusic";
+import BackgroundMusic, { type BackgroundMusicHandle } from "@/components/BackgroundMusic";
 import Countdown from "@/components/Countdown";
 import Footer from "@/components/Footer";
 import Gallery from "@/components/Gallery";
@@ -17,6 +17,7 @@ const SKIP_HASH = "showmore";
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
   const [skipAnimation, setSkipAnimation] = useState(false);
+  const musicRef = useRef<BackgroundMusicHandle>(null);
 
   useLayoutEffect(() => {
     if (window.location.hash === `#${SKIP_HASH}`) {
@@ -60,7 +61,12 @@ export default function Home() {
     <main>
       <section className="relative overflow-hidden" style={{ height: isOpen ? undefined : "100dvh" }}>
         <Hero isOpen={isOpen} skipAnimation={skipAnimation} />
-        <VideoIntro isOpen={isOpen} skipAnimation={skipAnimation} onEnded={open} />
+        <VideoIntro
+          isOpen={isOpen}
+          skipAnimation={skipAnimation}
+          onStart={() => musicRef.current?.play()}
+          onEnded={open}
+        />
       </section>
       <Invitation />
       <Gallery />
@@ -68,7 +74,7 @@ export default function Home() {
       <Rsvp />
       <Countdown />
       <Footer />
-      <BackgroundMusic />
+      <BackgroundMusic ref={musicRef} />
     </main>
   );
 }
