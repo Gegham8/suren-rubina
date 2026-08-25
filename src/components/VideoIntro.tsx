@@ -49,7 +49,7 @@ export default function VideoIntro({ isOpen, skipAnimation, onStart, onEnded }: 
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[#ECEBE9]"
       style={{ pointerEvents: isOpen ? "none" : "auto" }}
       aria-hidden={isOpen}
       animate={{ opacity: isOpen ? 0 : 1 }}
@@ -71,7 +71,7 @@ export default function VideoIntro({ isOpen, skipAnimation, onStart, onEnded }: 
           preload="auto"
           onCanPlayThrough={() => setIsReady(true)}
           onEnded={onEnded}
-          className="h-full w-full select-none object-cover"
+          className="h-full w-full select-none object-cover md:object-contain"
         />
       </button>
     </motion.div>
