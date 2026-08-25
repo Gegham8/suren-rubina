@@ -5,7 +5,12 @@ import { useEffect, useState } from "react";
 
 import countdownPhoto from "../../public/images/countdown.webp";
 
-/** Wedding moment the countdown runs to. */
+/**
+ * Wedding moment the countdown runs to: 1:30 PM in Los Angeles, matching the
+ * ceremony in the Schedule. The -07:00 offset is LA's PDT — on Oct 10, 2026 the
+ * US is still on daylight saving (it ends Nov 1, 2026), so LA is UTC-7. This is
+ * one fixed instant, so the countdown is correct for every viewer's timezone.
+ */
 const TARGET = new Date("2026-10-10T13:30:00-07:00").getTime();
 
 const LABELS = ["days", "hours", "minutes", "seconds"] as const;
