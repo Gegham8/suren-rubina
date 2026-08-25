@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light only;
+}
+
+html,
+body {
+  background: #ECEBE9;
+}
+
+/* Fixed viewport-sized backdrop (iOS-safe alternative to
+   background-attachment: fixed, which iOS Safari ignores). */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: #ECEBE9;
+}
+
+/* Full-viewport height that respects iOS Safari's dynamic toolbar. */
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: "Cormorant Garamond", serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* clip (not hidden) kills accidental horizontal scroll without
+     turning body into a scroll container that would break sticky. */
+  overflow-x: hidden;
+  overflow-x: clip;
+  /* Stop iOS rubber-band and Android Chrome pull-to-refresh / scroll-chaining. */
+  overscroll-behavior: none;
+  /* viewport-fit=cover draws under the notch; keep content off the sides. */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Remove the double-tap-to-zoom delay on interactive controls. */
+a,
+button,
+[role="button"],
+label,
+input {
+  touch-action: manipulation;
+}
+
+/* Respect users who ask for less motion (also covers framer-motion's
+   CSS-driven transitions as a safety net). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Double-thump heartbeat for the calendar heart. */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.09); }
+}
+
+/* Pendulum swing from the hanging point, like a lamp in the room. */
+@keyframes sway {
+  0%, 100% { transform: rotate(-7deg); }
+  50% { transform: rotate(7deg); }
+}
