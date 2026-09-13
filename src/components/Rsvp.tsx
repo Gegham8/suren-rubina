@@ -3,13 +3,14 @@
 import Image from "next/image";
 import { useState, type FormEvent } from "react";
 
+import { MAX_PARTY } from "@/config/rsvp";
+
 import dividerBand from "../../public/images/divider-band.webp";
 
 const FOREST = "#C47A5A";
 const WHITE = "#ffffff";
 const SERIF = '"Cormorant Garamond", serif';
 
-const MAX_PARTY = 5;
 const PARTY_SIZES = Array.from({ length: MAX_PARTY }, (_, i) => i + 1);
 
 const ATTENDING = [
@@ -22,7 +23,7 @@ type Status = "idle" | "sending" | "sent" | "error";
 
 /**
  * RSVP: green card with torn-paper edges and the form. The responder is
- * attendee #1; picking "Yes" reveals a party-size select (max 3) and a name
+ * attendee #1; picking "Yes" reveals a party-size select (max MAX_PARTY) and a name
  * input for each additional guest. Submissions POST to /api/rsvp, which
  * forwards to the Google Sheet webhook (see docs/google-sheet-setup.md).
  */

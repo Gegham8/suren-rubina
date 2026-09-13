@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 
+import { MAX_PARTY } from "@/config/rsvp";
+
 export const runtime = "nodejs";
 // Apps Script web apps cold-start slowly; give the forward room beyond Hobby's 10s.
 export const maxDuration = 15;
 
-const MAX_PARTY = 3;
 const FORWARD_TIMEOUT_MS = 8000;
 
 type Rsvp = {
