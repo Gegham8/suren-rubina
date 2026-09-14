@@ -6,11 +6,11 @@ import { motion, type Transition } from "framer-motion";
 /**
  * The intro overlay: a fully-opaque, fixed full-screen light-transition video.
  * It covers the entire page so nothing beneath is visible until the video ends.
- * The 28MB clip is fully prefetched into a blob up front (not just `preload`,
- * which only buffers enough to *estimate* smooth playback) and played from
- * memory, so it runs start-to-finish with zero buffering. The tap prompt only
- * arms once the clip is ready. When the video ends, `onEnded` opens the page and
- * the overlay fades away to reveal it.
+ * The clip streams from its URL so iOS Safari can serve it with native HTTP
+ * range requests — fetching it into a blob first breaks playback on mobile,
+ * where the intro is the only place this component mounts. The tap prompt only
+ * arms once it can play through. When the video ends, `onEnded` opens the page
+ * and the overlay fades away to reveal it.
  */
 
 const VIDEO_SRC = "/images/light-transition.MOV";
@@ -27,32 +27,15 @@ type VideoIntroProps = {
 
 export default function VideoIntro({ isOpen, skipAnimation, onStart, onEnded }: VideoIntroProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Fully download the clip into a blob, then play it from memory — guarantees
-  // no mid-play buffering. Skip on the #showmore skip-refresh path (intro already
-  // open). Falls back to streaming from the URL if the fetch fails.
+  // Kick off buffering immediately — `preload="auto"` alone is a hint browsers
+  // may ignore, so call load() explicitly for the large clip. Skip it entirely
+  // when the intro is already open (the #showmore skip-refresh path).
   useEffect(() => {
     if (isOpen) return;
-    const controller = new AbortController();
-    let objectUrl: string | null = null;
-    const prefetch = async (): Promise<void> => {
-      try {
-        const res = await fetch(VIDEO_SRC, { signal: controller.signal });
-        if (!res.ok) throw new Error(`video fetch failed: ${res.status}`);
-        objectUrl = URL.createObjectURL(await res.blob());
-        setVideoUrl(objectUrl);
-      } catch {
-        if (!controller.signal.aborted) setVideoUrl(VIDEO_SRC);
-      }
-    };
-    void prefetch();
-    return () => {
-      controller.abort();
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
-    };
+    videoRef.current?.load();
   }, [isOpen]);
 
   const play = (): void => {
@@ -84,7 +67,7 @@ export default function VideoIntro({ isOpen, skipAnimation, onStart, onEnded }: 
       >
         <video
           ref={videoRef}
-          src={videoUrl ?? undefined}
+          src={VIDEO_SRC}
           muted
           playsInline
           preload="auto"
