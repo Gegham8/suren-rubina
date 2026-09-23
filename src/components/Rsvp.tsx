@@ -143,9 +143,6 @@ export default function Rsvp() {
             help us plan our special day.
           </p>
 
-          <p className="mt-7" style={{ fontSize: "clamp(1.1rem, 4.4vw, 1.35rem)" }}>
-            Kindly respond by <strong>September 10, 2026</strong>
-          </p>
 
           {status === "sent" ? (
             <p className="mt-14 pb-4" style={{ fontSize: "1.4rem", fontWeight: 500 }}>
